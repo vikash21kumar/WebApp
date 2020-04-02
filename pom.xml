@@ -4,7 +4,7 @@
 	<groupId>WEBPOC</groupId>
 	<artifactId>JavaWebApp</artifactId>
 	<packaging>war</packaging>
-	<version>1.0</version>
+	<version>1.0.0.100</version>
 	<name>JavaWebApp</name>
 	<url>http://maven.apache.org</url>
 	<properties>
