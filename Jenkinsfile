@@ -21,7 +21,7 @@ node {
     }
 
     stage('Maven build') {
-        buildInfo = rtMaven.run pom: 'pom.xml', goals: 'clean install'
+        buildInfo = rtMaven.run pom: 'pom.xml', goals: 'clean install sonar:sonar'
     }
 
     stage('Publish build info') {
