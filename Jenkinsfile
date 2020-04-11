@@ -196,7 +196,7 @@ pipeline {
                     tool: "maven", // Tool name from Jenkins configuration
                     pom: 'Acceptancetest/pom.xml',
                     goals: 'test',
-                    deployerId: "MAVEN_DEPLOYER",
+                    //deployerId: "MAVEN_DEPLOYER",
                     resolverId: "MAVEN_RESOLVER"
                 )
             }
@@ -213,7 +213,7 @@ pipeline {
                       reportName: 'Acceptance Test Report'
                     ]
                 slackSend channel: '#cicd', message: 'Acceptace Test Completed '
-        jiraComment body: "Acceptance Test Completed", issueKey: 'DEMO-2'
+				jiraComment body: "Acceptance Test Completed", issueKey: 'DEMO-2'
                 }
             }
         }
