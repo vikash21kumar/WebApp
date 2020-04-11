@@ -54,7 +54,7 @@ pipeline {
                     jiraSendBuildInfo branch: 'DEMO-2', site: 'txdevopsbootcamp.atlassian.net'
                     jiraComment body: "Build completed", issueKey: 'DEMO-2'
                     
-                    //jiraSendBuildInfo branch: 'master', site: 'txdevopsbootcamp.atlassian.net'
+                    ////jiraSendBuildInfo branch: 'master', site: 'txdevopsbootcamp.atlassian.net'
                     }
                 }
         }
