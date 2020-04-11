@@ -162,16 +162,16 @@ pipeline {
                  getJtl:false,
                  getJunit:false
                  }
-             }
+             
         post {
                 always {
             
                 jiraComment body: "Load Test Executed in BlazeMeter", issueKey: 'DEMO-2'
-		slackSend channel: '#cicd', message: 'QA Deployment  Completed '
+        slackSend channel: '#cicd', message: 'QA Deployment  Completed '
        }
         }
 
-
+        }
         stage ('PROD Deployment') {
            
             steps {
@@ -213,11 +213,10 @@ pipeline {
                       reportName: 'Acceptance Test Report'
                     ]
                 slackSend channel: '#cicd', message: 'Acceptace Test Completed '
-		jiraComment body: "Acceptance Test Completed", issueKey: 'DEMO-2'
+        jiraComment body: "Acceptance Test Completed", issueKey: 'DEMO-2'
                 }
             }
         }
 
     }
 }
-
