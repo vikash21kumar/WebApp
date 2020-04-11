@@ -190,7 +190,7 @@ pipeline {
         }
         }
 
-        /*stage ('Acceptance Test') {
+        stage ('Acceptance Test') {
             steps {
                 rtMavenRun (
                     tool: "maven", // Tool name from Jenkins configuration
@@ -216,7 +216,7 @@ pipeline {
         jiraComment body: "Acceptance Test Completed", issueKey: 'DEMO-2'
                 }
             }
-        }*/
+        }
 
     }
 }
