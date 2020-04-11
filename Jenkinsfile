@@ -180,6 +180,7 @@ pipeline {
                 sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.21.129.89 sudo mv JavaWebApp-1.0.0.101.war ProdWebapp.war"
                 sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.21.129.89 sudo cp *.war /opt/tomcat/webapps/"
                 ////sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@18.223.162.120 sudo chown tomcat:tomcat /opt/tomcat/webapps/*.war"
+				sleep 10
 
             }
         post {
