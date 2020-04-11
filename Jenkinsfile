@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    tools {
+      // Install the Maven version configured as "M3" and add it to the path.
+      maven "maven"
+   }
     stages {
         stage ('Clone') {
             steps {
@@ -37,23 +41,60 @@ pipeline {
             steps {
                 slackSend channel: '#cicd', message: 'Build Started'
                 rtMavenRun (
-                    tool: "maven", // Tool name from Jenkins configuration
-                    pom: 'pom.xml',
-                    goals: 'clean install',
-                    deployerId: "MAVEN_DEPLOYER",
-                    resolverId: "MAVEN_RESOLVER"
-                )
-            }
+                                tool: "maven", // Tool name from Jenkins configuration
+                                pom: 'pom.xml',
+                                goals: 'clean install ',
+                                deployerId: "MAVEN_DEPLOYER",
+                                resolverId: "MAVEN_RESOLVER"
+                            )
+                    }
             post {
                 always {
-                slackSend channel: '#cicd', message: 'Build Completed '
-                jiraSendBuildInfo branch: 'DEMO-1', site: 'txdevopsbootcamp.atlassian.net'
-                jiraComment body: "Build 'env.BUILD_NUMBER' completed with commit ", issueKey: 'DEMO-1'
-                //comment_issues()
-                //jiraSendBuildInfo branch: 'master', site: 'txdevopsbootcamp.atlassian.net'
-       }
-   }
+                    slackSend channel: '#cicd', message: 'Build Completed '
+                    jiraSendBuildInfo branch: 'DEMO-1', site: 'txdevopsbootcamp.atlassian.net'
+                    jiraComment body: "Build 'env.BUILD_NUMBER' completed with commit ", issueKey: 'DEMO-1'
+                    //comment_issues()
+                    //jiraSendBuildInfo branch: 'master', site: 'txdevopsbootcamp.atlassian.net'
+                    }
+                }
         }
+        stage ('SonarQube analysis') { 
+                steps{
+
+                withSonarQubeEnv('sonarqube') { 
+               
+                sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.3.0.603:sonar ' + 
+                '-f pom.xml ' +
+                '-Dsonar.projectKey=JavaWebApp ' +
+                '-Dsonar.login=admin ' +
+                '-Dsonar.password=admin ' +
+                '-Dsonar.language=java ' +
+                '-Dsonar.sources=. ' +
+                '-Dsonar.tests=. ' +
+                '-Dsonar.test.inclusions=**/test/java/servlet/createpage_junit.java ' +
+                '-Dsonar.exclusions=**/test/java/servlet/createpage_junit.java'
+                }
+
+                }
+                
+
+        }
+        //stage ("SonarQube Quality Gate") { 
+        //        steps {
+         //           script{
+
+         //           timeout(time: 2, unit: 'MINUTES') { 
+         //       def qg = waitForQualityGate() 
+         //       if (qg.status != 'OK') {
+         //       error "Pipeline aborted due to quality gate failure: ${qg.status}"
+         //       }
+         //           }
+                    
+
+         //       }
+                
+         //   }
+        //}
         stage ('List Artifact') {
             steps {
                 sh "ls -ltr ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war"
@@ -69,10 +110,26 @@ pipeline {
                     pom: 'functionaltest/pom.xml',
                     goals: 'test',
                     deployerId: "MAVEN_DEPLOYER",
-                    resolverId: "MAVEN_RESOLVER"
+                   resolverId: "MAVEN_RESOLVER"
                 )
             }
-        }
+            
+           post {
+                success {
+                  // publish html
+                  publishHTML target: [
+                      allowMissing: false,
+                     alwaysLinkToLastBuild: false,
+                      keepAll: true,
+                      reportDir: 'functionaltest/target/surefire-reports',
+                     reportFiles: 'index.html',
+                     reportName: 'Functional Test Report'
+                    ]
+                slackSend channel: '#cicd', message: 'Functional Test Completed '
+                }
+            
+            }
+       }
         stage ('QA Deployment') {
            
             steps {
@@ -86,12 +143,13 @@ pipeline {
         post {
                 always {
                 jiraSendDeploymentInfo environmentId: 'QA', environmentName: 'QA', environmentType: 'testing', serviceIds: ['DEMO-1'], site: 'txdevopsbootcamp.atlassian.net', state: 'successful'
+                slackSend channel: '#cicd', message: 'QA Deployment  Completed '
        }
         }
         }
         
     stage ('BlazeMeter test'){
-			 steps {
+             steps {
                  blazeMeterTest credentialsId:'Blazemeter',
                  serverUrl:'https://a.blazemeter.com',
                  testId:'7883232',
@@ -101,7 +159,7 @@ pipeline {
                  junitPath:'',
                  getJtl:false,
                  getJunit:false
-				 }
+                 }
              }
 
         stage ('Publish build info') {
@@ -111,6 +169,52 @@ pipeline {
                 )
             }
         }
+
+        stage ('PROD Deployment') {
+           
+            steps {
+                sh "ls -ltr ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war"
+                sh "scp -i /var/lib/jenkins/keys/caseStudy.pem  ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war ubuntu@3.21.129.89:"
+                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.21.129.89 sudo mv JavaWebApp-1.0.0.101.war ProdWebapp.war"
+                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.21.129.89 sudo cp *.war /opt/tomcat/webapps/"
+                //sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@18.223.162.120 sudo chown tomcat:tomcat /opt/tomcat/webapps/*.war"
+
+            }
+        post {
+                always {
+                jiraSendDeploymentInfo environmentId: 'PROD', environmentName: 'PROD', environmentType: 'production', serviceIds: ['DEMO-1'], site: 'txdevopsbootcamp.atlassian.net', state: 'successful'
+                slackSend channel: '#cicd', message: 'Production Deployment Completed '
+       }
+        }
+        }
+
+        stage ('Acceptance Test') {
+            steps {
+                rtMavenRun (
+                    tool: "maven", // Tool name from Jenkins configuration
+                    pom: 'Acceptancetest/pom.xml',
+                    goals: 'test',
+                    deployerId: "MAVEN_DEPLOYER",
+                    resolverId: "MAVEN_RESOLVER"
+                )
+            }
+            
+            post {
+                success {
+                  // publish html
+                  publishHTML target: [
+                      allowMissing: false,
+                      alwaysLinkToLastBuild: false,
+                      keepAll: true,
+                      reportDir: 'Acceptancetest/target/surefire-reports',
+                      reportFiles: 'index.html',
+                      reportName: 'Acceptance Test Report'
+                    ]
+                slackSend channel: '#cicd', message: 'Acceptace Test Completed '
+                }
+            }
+        }
+
     }
 }
 
