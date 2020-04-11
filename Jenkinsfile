@@ -150,7 +150,7 @@ pipeline {
         }
         }
         
-    /*stage ('BlazeMeter test'){
+    stage ('BlazeMeter test'){
              steps {
                  blazeMeterTest credentialsId:'blazemeter1',
                  serverUrl:'https://a.blazemeter.com',
@@ -171,7 +171,7 @@ pipeline {
        }
         }
 
-        }*/
+        }
         stage ('PROD Deployment') {
            
             steps {
