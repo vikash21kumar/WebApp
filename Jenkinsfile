@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage ('Clone') {
             steps {
-                git branch: 'DEMO-1', url: "https://github.com/vikash21kumar/WebApp.git"
+                git branch: 'DEMO-2', url: "https://github.com/vikash21kumar/WebApp.git"
                 //sh Commit_message=`git log --format="medium" -1 ${GIT_COMMIT}`# print commit, author, date, title & commit message
             }
         }
@@ -51,9 +51,9 @@ pipeline {
             post {
                 always {
                     slackSend channel: '#cicd', message: 'Build Completed '
-                    jiraSendBuildInfo branch: 'DEMO-1', site: 'txdevopsbootcamp.atlassian.net'
-                    jiraComment body: "Build 'env.BUILD_NUMBER' completed with commit ", issueKey: 'DEMO-1'
-                    //comment_issues()
+                    jiraSendBuildInfo branch: 'DEMO-2', site: 'txdevopsbootcamp.atlassian.net'
+                    jiraComment body: "Build completed", issueKey: 'DEMO-2'
+                    
                     //jiraSendBuildInfo branch: 'master', site: 'txdevopsbootcamp.atlassian.net'
                     }
                 }
@@ -79,6 +79,15 @@ pipeline {
                 
 
         }
+        
+        stage ('Publish build info') {
+            steps {
+                rtPublishBuildInfo (
+                    serverId: "txdevops"
+                )
+            }
+        }
+        
         //stage ("SonarQube Quality Gate") { 
         //        steps {
          //           script{
@@ -95,14 +104,7 @@ pipeline {
                 
          //   }
         //}
-        stage ('List Artifact') {
-            steps {
-                sh "ls -ltr ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war"
-                sh "ls -ltr /var/lib/jenkins/keys/caseStudy.pem"
-                sh "chmod 400  /var/lib/jenkins/keys/caseStudy.pem"
-                //scp -i /path/my-key-pair.pem /path/SampleFile.txt ec2-user@ec2-198-51-100-1.compute-1.amazonaws.com:~
-            }
-        }
+        
         stage ('Functional Test') {
             steps {
                 rtMavenRun (
@@ -142,7 +144,7 @@ pipeline {
             }
         post {
                 always {
-                jiraSendDeploymentInfo environmentId: 'QA', environmentName: 'QA', environmentType: 'testing', serviceIds: ['DEMO-1'], site: 'txdevopsbootcamp.atlassian.net', state: 'successful'
+                jiraSendDeploymentInfo environmentId: 'QA', environmentName: 'QA', environmentType: 'testing', serviceIds: ['DEMO-2'], site: 'txdevopsbootcamp.atlassian.net', state: 'successful'
                 slackSend channel: '#cicd', message: 'QA Deployment  Completed '
        }
         }
@@ -150,9 +152,9 @@ pipeline {
         
     stage ('BlazeMeter test'){
              steps {
-                 blazeMeterTest credentialsId:'Blazemeter',
+                 blazeMeterTest credentialsId:'BlazeMeterNew',
                  serverUrl:'https://a.blazemeter.com',
-                 testId:'7883232',
+                 testId:'7883239',
                  notes:'',
                  sessionProperties:'',
                  jtlPath:'',
@@ -161,14 +163,14 @@ pipeline {
                  getJunit:false
                  }
              }
-
-        stage ('Publish build info') {
-            steps {
-                rtPublishBuildInfo (
-                    serverId: "txdevops"
-                )
-            }
+        post {
+                always {
+            
+                jiraComment body: "Load Test Executed in BlazeMeter", issueKey: 'DEMO-2'
+		slackSend channel: '#cicd', message: 'QA Deployment  Completed '
+       }
         }
+
 
         stage ('PROD Deployment') {
            
@@ -182,7 +184,7 @@ pipeline {
             }
         post {
                 always {
-                jiraSendDeploymentInfo environmentId: 'PROD', environmentName: 'PROD', environmentType: 'production', serviceIds: ['DEMO-1'], site: 'txdevopsbootcamp.atlassian.net', state: 'successful'
+                jiraSendDeploymentInfo environmentId: 'PROD', environmentName: 'PROD', environmentType: 'production', serviceIds: ['DEMO-2'], site: 'txdevopsbootcamp.atlassian.net', state: 'successful'
                 slackSend channel: '#cicd', message: 'Production Deployment Completed '
        }
         }
@@ -211,6 +213,7 @@ pipeline {
                       reportName: 'Acceptance Test Report'
                     ]
                 slackSend channel: '#cicd', message: 'Acceptace Test Completed '
+		jiraComment body: "Acceptance Test Completed", issueKey: 'DEMO-2'
                 }
             }
         }
@@ -218,17 +221,3 @@ pipeline {
     }
 }
 
-void comment_issues() {
-    def issue_pattern = "DEMO-\\d"
-
-    // Find all relevant commit ids
-    currentBuild.changeSets.each {changeSet ->
-        changeSet.each { commit ->
-            String msg = commit.getMsg()
-            msg.findAll(issue_pattern).each {
-                // Actually post a comment
-                id -> jiraComment idOrKey: 'DEMO', comment: 'Hi there!'
-            }
-        }
-    }
-}
