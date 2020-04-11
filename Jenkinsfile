@@ -118,7 +118,7 @@ pipeline {
             
            post {
                 success {
-                  // publish html
+                  
                   publishHTML target: [
                       allowMissing: false,
                      alwaysLinkToLastBuild: false,
@@ -152,9 +152,9 @@ pipeline {
         
     stage ('BlazeMeter test'){
              steps {
-                 blazeMeterTest credentialsId:'BlazeMeterNew',
+                 blazeMeterTest credentialsId:'blazemeter1',
                  serverUrl:'https://a.blazemeter.com',
-                 testId:'7883239',
+                 testId:'7911631',
                  notes:'',
                  sessionProperties:'',
                  jtlPath:'',
@@ -190,7 +190,7 @@ pipeline {
         }
         }
 
-        /*stage ('Acceptance Test') {
+        stage ('Acceptance Test') {
             steps {
                 rtMavenRun (
                     tool: "maven", // Tool name from Jenkins configuration
@@ -216,7 +216,7 @@ pipeline {
         jiraComment body: "Acceptance Test Completed", issueKey: 'DEMO-2'
                 }
             }
-        }*/
+        }
 
     }
 }
