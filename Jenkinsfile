@@ -150,7 +150,7 @@ pipeline {
         }
         }
         
-    /*stage ('BlazeMeter test'){
+    stage ('BlazeMeter test'){
              steps {
                  blazeMeterTest credentialsId:'BlazeMeterNew',
                  serverUrl:'https://a.blazemeter.com',
@@ -167,11 +167,11 @@ pipeline {
                 always {
             
                 jiraComment body: "Load Test Executed in BlazeMeter", issueKey: 'DEMO-4'
-        slackSend channel: '#cicd', message: 'QA Deployment  Completed '
+				slackSend channel: '#cicd', message: 'QA Deployment  Completed '
        }
         }
 
-        }*/
+        }
         stage ('PROD Deployment') {
            
             steps {
