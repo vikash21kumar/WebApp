@@ -118,7 +118,7 @@ pipeline {
             
            post {
                 success {
-                  // publish html
+                  //// publish html
                   publishHTML target: [
                       allowMissing: false,
                      alwaysLinkToLastBuild: false,
