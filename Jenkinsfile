@@ -136,9 +136,9 @@ pipeline {
            
             steps {
                 //sh "ls -ltr ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war"
-                sh "scp -i /var/lib/jenkins/keys/caseStudy.pem  ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war ubuntu@3.19.222.141:"
-                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.19.222.141 sudo mv JavaWebApp-1.0.0.101.war QAWebapp.war"
-                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.19.222.141 sudo cp *.war /opt/tomcat/webapps/"
+                sh "scp -i /var/lib/jenkins/keys/caseStudy.pem  ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war ubuntu@3.134.87.54:"
+                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.134.87.54 sudo mv JavaWebApp-1.0.0.101.war QAWebapp.war"
+                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.134.87.54 sudo cp *.war /opt/tomcat/webapps/"
                 //sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.19.222.141 sudo chown tomcat:tomcat /opt/tomcat/webapps/*.war"
 
             }
@@ -176,9 +176,9 @@ pipeline {
            
             steps {
                 sh "ls -ltr ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war"
-                sh "scp -i /var/lib/jenkins/keys/caseStudy.pem  ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war ubuntu@3.21.129.89:"
-                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.21.129.89 sudo mv JavaWebApp-1.0.0.101.war ProdWebapp.war"
-                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.21.129.89 sudo cp *.war /opt/tomcat/webapps/"
+                sh "scp -i /var/lib/jenkins/keys/caseStudy.pem  ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war ubuntu@18.225.7.203:"
+                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@18.225.7.203 sudo mv JavaWebApp-1.0.0.101.war ProdWebapp.war"
+                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@18.225.7.203 sudo cp *.war /opt/tomcat/webapps/"
                 //sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@18.223.162.120 sudo chown tomcat:tomcat /opt/tomcat/webapps/*.war"
 				sleep 10
 
