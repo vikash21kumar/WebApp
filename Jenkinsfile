@@ -177,9 +177,9 @@ pipeline {
            
             steps {
                 sh "ls -ltr ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war"
-                sh "scp -i /var/lib/jenkins/keys/caseStudy.pem  ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war ubuntu@18.225.7.203:"
-                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@18.225.7.203 sudo mv JavaWebApp-1.0.0.101.war ProdWebapp.war"
-                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@18.225.7.203 sudo cp *.war /opt/tomcat/webapps/"
+                sh "scp -i /var/lib/jenkins/keys/caseStudy.pem  ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war ubuntu@13.58.247.254:"
+                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@13.58.247.254 sudo mv JavaWebApp-1.0.0.101.war ProdWebapp.war"
+                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@13.58.247.254 sudo cp *.war /opt/tomcat/webapps/"
                 //sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@18.223.162.120 sudo chown tomcat:tomcat /opt/tomcat/webapps/*.war"
 				sleep 10
 
