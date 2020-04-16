@@ -105,7 +105,25 @@ pipeline {
          //   }
         //}
         
-        stage ('Functional Test') {
+        
+        stage ('QA Deployment') {
+           
+            steps {
+                //sh "ls -ltr ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war"
+                sh "scp -i /var/lib/jenkins/keys/caseStudy.pem  ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war ubuntu@3.134.87.54:"
+                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.134.87.54 sudo mv JavaWebApp-1.0.0.101.war QAWebapp.war"
+                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.134.87.54 sudo cp *.war /opt/tomcat/webapps/"
+                //sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.19.222.141 sudo chown tomcat:tomcat /opt/tomcat/webapps/*.war"
+
+            }
+        post {
+                always {
+                jiraSendDeploymentInfo environmentId: 'QA', environmentName: 'QA', environmentType: 'testing', serviceIds: ['DEMO-4'], site: 'txdevopsbootcamp.atlassian.net', state: 'successful'
+                slackSend channel: '#cicd', message: 'QA Deployment  Completed '
+       }
+        }
+        }
+	stage ('Functional Test') {
             steps {
                 rtMavenRun (
                     tool: "maven", // Tool name from Jenkins configuration
@@ -132,23 +150,6 @@ pipeline {
             
             }
        }
-        stage ('QA Deployment') {
-           
-            steps {
-                //sh "ls -ltr ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war"
-                sh "scp -i /var/lib/jenkins/keys/caseStudy.pem  ${WORKSPACE}/target/JavaWebApp-1.0.0.101.war ubuntu@3.134.87.54:"
-                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.134.87.54 sudo mv JavaWebApp-1.0.0.101.war QAWebapp.war"
-                sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.134.87.54 sudo cp *.war /opt/tomcat/webapps/"
-                //sh "ssh -i /var/lib/jenkins/keys/caseStudy.pem  ubuntu@3.19.222.141 sudo chown tomcat:tomcat /opt/tomcat/webapps/*.war"
-
-            }
-        post {
-                always {
-                jiraSendDeploymentInfo environmentId: 'QA', environmentName: 'QA', environmentType: 'testing', serviceIds: ['DEMO-4'], site: 'txdevopsbootcamp.atlassian.net', state: 'successful'
-                slackSend channel: '#cicd', message: 'QA Deployment  Completed '
-       }
-        }
-        }
         
     /*stage ('BlazeMeter test'){
              steps {
