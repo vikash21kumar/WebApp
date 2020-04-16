@@ -129,7 +129,7 @@ pipeline {
                     tool: "maven", // Tool name from Jenkins configuration
                     pom: 'functionaltest/pom.xml',
                     goals: 'test',
-                    deployerId: "MAVEN_DEPLOYER",
+                    
                    resolverId: "MAVEN_RESOLVER"
                 )
             }
