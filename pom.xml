@@ -7,7 +7,7 @@
 	<version>1.0.0.101</version>
 	<name>JavaWebApp</name>
 	<url>http://maven.apache.org</url>
-<!-- Test commit -->
+<!-- DEMO-6 Test commit -->
 	<properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <sonar.language>java</sonar.language>
